@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Notifications</title>
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          background-color: #f0f0f0;
+          margin: 0;
+          padding: 20px;
+        }
+
+        .container {
+          max-width: 800px;
+          margin: 0 auto;
+          background-color: #fff;
+          padding: 20px;
+          border-radius: 8px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .notification-container {
+          border: 1px solid #ccc;
+          background-color: #f9f9f9;
+          padding: 10px;
+          margin-bottom: 20px;
+          border-radius: 4px;
+        }
+
+        .username {
+          font-weight: bold;
+          margin-right: 5px;
+          color: #333;
+        }
+
+        .link {
+          text-decoration: none;
+          color: #007bff;
+          margin-left: 10px;
+        }
+
+        .downvote-message {
+          color: #ff0000;
+        }
+
+        .upvote-message {
+          color: #00cc00;
+        }
+
+        .tab-buttons {
+          margin-top: 20px;
+        }
+
+        .tab-button {
+          background-color: #fff;
+          color: #007bff;
+          border: 1px solid #007bff;
+          border-radius: 4px;
+          padding: 10px 20px;
+          cursor: pointer;
+          margin-right: 10px;
+          font-weight: bold;
+          transition: background-color 0.3s ease;
+        }
+
+        .tab-button:hover {
+        color: #fff;
+          background-color: #0056b3;
+        }
+
+        #votes {
+          display: none;
+        }
+        b {
+          font-size: 24px;
+        }
+        .h{
+           text-align: center;
+        }
+        .button-container {
+      display: flex;
+      align-items: center;
+    }
+    .notification-container:hover{
+      border: 1px solid;
+    }
+    </style>
+</head>
+<body>
+<div class="h">
+    <b>Notifications</b>
+</div>
+<br>
+<div class="container">
+    <div class="button-container">
+        <a th:href="@{/posts}" class="link">Back To Home</a>
+        <form th:action="@{/clearAll}" method="post" style="float: right;">
+<!--            <input type="hidden" th:value="${childComments}" name="childComment">-->
+            <button type="submit" class="link" style="background-color: #fff; border: 0; font-size: 16px; cursor: pointer;">Clear All</button>
+        </form>
+    </div>
+    <div class="tab-buttons">
+        <button id="comment" class="tab-button">Comments</button>
+        <button id="vote" class="tab-button">Votes</button>
+
+    </div>
+    <br>
+    <br>
+    <div id="comments">
+        <span th:if="${#lists.size(comments) > 0}">
+          <div th:each="comment : ${comments}" class="notification-container">
+            <a th:href="@{'/' + ${comment.post.postId}}" class="link">
+            <span th:text="${comment.user.username}" class="username"></span>
+              <span th:text="${' for the post : ' + comment.post.postName}" class="username"></span>
+              <br>
+              <br>
+            <span th:text="${comment.content}"></span>
+            </a>
+          </div>
+        </span>
+        <span th:unless="${#lists.size(comments) > 0}">
+          <div class="notification-container">
+            Nothing to show here...
+          </div>
+        </span>
+        <div>
+        <span  th:if="${#lists.size(childComments) > 0}">
+        <div th:each="comment : ${childComments}" class="notification-container">
+            <a th:href="@{'/' + ${comment.post.postId}}" class="link">
+                <span th:text="${comment.user.username}" class="username"></span>
+                <span th:text="${' written : '+comment.content}"></span>
+                <span th:text="${' on the comment : ' + comment.parentComment.content}" class="username"></span>
+            </a>
+        </div>
+        </span>
+        </div>
+    </div>
+    <div id="votes">
+      <span th:if="${#lists.size(votes) > 0}">
+        <div th:each="vote : ${votes}" class="notification-container">
+          <a th:href="@{'/' + ${vote.post.postId}}" class="link">
+            <span th:text="${vote.user.username}" class="username"></span>
+            <span th:text="${' for the post : ' + vote.post.postName}" class="username"></span>
+            <br>
+            <br>
+            <span th:if="${#strings.equals(vote.voteType, 'DOWNVOTE')}" class="downvote-message">Downvoted your post</span>
+            <span th:if="${#strings.equals(vote.voteType, 'UPVOTE')}" class="upvote-message">Upvoted your post</span>
+
+          </a>
+        </div>
+      </span>
+        <span th:unless="${#lists.size(votes) > 0}">
+            <div class="notification-container">
+              Nothing to show here...
+            </div>
+        </span>
+    </div>
+
+
+</div>
+
+<script>
+    function toggler() {
+      let commentbtn = document.getElementById('comment')
+      let votebtn = document.getElementById('vote')
+
+      const votes = document.getElementById('votes');
+      const comments = document.getElementById('comments');
+      commentbtn.addEventListener('click', function () {
+        votes.style.display = 'none';
+        comments.style.display = 'block';
+      });
+
+      votebtn.addEventListener('click', function () {
+        votes.style.display = 'block';
+        comments.style.display = 'none';
+      });
+    }
+
+    toggler()
+</script>
+</body>
+</html>

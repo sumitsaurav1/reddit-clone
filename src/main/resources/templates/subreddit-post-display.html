@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,1,0"/>
+    <link rel="stylesheet" th:href="@{/css/subreddit-post-display.css}"/>
+    <link rel="stylesheet" href="../static/css/subreddit-post-display.css">
+    <title>Posts</title>
+
+</head>
+<body>
+
+<div class="nav">
+    <div class="nav-item1">
+        <div class="logo">
+            <img src="https://www.redditinc.com/assets/images/site/reddit-logo.png">
+            <strong>reddit</strong>
+        </div>
+        <div class="dropdown">
+
+            <div style="align-items:center;
+                        text-align:center;
+                        display:flex;
+                        border:1px solid #BDC3C7 ;
+                        padding:3px 2px; width:190px;
+                        justify-content:space-between;
+                        cursor:pointer;">
+                <a  th:href="@{/posts}" class="dropbtn">Home </a>
+                <span class="material-symbols-outlined">stat_minus_1</span>
+            </div>
+
+            <div class="dropdown-content">
+
+                <form th:action="@{/subreddit}" method="get" class="search-form">
+            <span class="material-symbols-outlined">
+                search
+                </span>
+                    <input type="text" name="subredditName" placeholder="Search subreddit">
+                </form>
+
+                <a id="create-community-box" th:href="@{/create-community}"><span class="material-symbols-outlined">add</span> <p>Create Community</p></a>
+
+
+                <div class="select-box" th:each="subreddit: ${subredditList}">
+
+                    <div class="option">
+                        <img th:if="${ subreddit != null && subreddit.media != null}"   th:src="@{${'/display?id=' + subreddit.media.mediaId}}" alt="Image">
+                        <a th:if="${subreddit.name != null}" th:href="@{'/subreddit/r/'+ ${#strings.substring(subreddit.name, 2)}}"
+                           th:text="${subreddit.name}">
+                        </a>
+                        <span class="material-symbols-outlined">star</span>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+    <div class="nav-item2">
+        <form th:action="@{/search}" method="get" class="search-form">
+            <span class="material-symbols-outlined">search</span>
+            <input type="text" name="text" placeholder="Search for blog posts">
+        </form>
+    </div>
+
+    <div class="nav-item3">
+        <span class="material-symbols-outlined">
+            bubble
+        </span>
+        <span class="material-symbols-outlined">
+            chat_bubble
+        </span>
+
+        <a class="add" th:href="@{/create-post}">
+            <span class="material-symbols-outlined">
+            add
+            </span>
+        </a>
+        <div class="user-box" sec:authorize="isAuthenticated()">
+            <a class="add" th:href="@{/profile/posts}"><span th:if="${user != null}" th:text="${user.username}">bob</span></a>
+            &nbsp;
+            <div th:if="${user != null && user.media != null}">
+                <div class="user-image" th:if="${user.media.contentType.startsWith('image/')}">
+                    <img  th:src="@{${'/display?id=' + user.media.mediaId}}" alt="Image">
+                </div>
+            </div>
+            <div th:unless="${user != null && user.media != null}" class="user-media">
+                <img src="https://www.redditinc.com/assets/images/site/reddit-logo.png">
+            </div>
+            <p>Karma:<span th:if="${user != null}" th:text="${user.karma}"></span></p>
+
+        </div>
+        <div sec:authorize="isAnonymous()" class="auth">
+            <a th:href="@{/register}">Sing Up</a>
+            <a th:href="@{/login}" id="login-button">Login</a>
+        </div>
+        <div sec:authorize="isAuthenticated()" >
+            <form  th:action="@{/logout}" method="POST">
+                <input id="logout" type="submit" value="Logout" class="logout-button">
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="subreddit-nav-bar">
+
+    <div class="subreddit-mini-box">
+
+        <div th:if="${ subreddit != null && subreddit.media != null}">
+            <img   th:src="@{${'/display?id=' + subreddit.media.mediaId}}" alt="Image">
+            <br>
+            <span th:text="${'Post'}"></span>
+        </div>
+        &nbsp;
+        &nbsp;
+        <div>
+            <h1 th:text="${subredditName}"></h1>
+            <p th:text="${'r/' + subredditName}"></p>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="content-container">
+    <div class="content">
+        <div class="blog-container">
+
+            <div class="create-post">
+
+                <div sec:authorize="isAnonymous()">
+                    <img height="50px" width="50px" src="https://www.redditinc.com/assets/images/site/reddit-logo.png">
+                </div>
+
+                <div sec:authorize="isAuthenticated()">
+                    <div th:if="${user.media != null}">
+                        <div th:if="${user.media.contentType.startsWith('image/')}">
+                            <img height="50px" width="50px" th:src="@{${'/display?id=' + user.media.mediaId}}" alt="Image">
+                        </div>
+                    </div>
+                </div>
+
+                <a id="create-new-post-tab" class="add" th:href="@{/create-post}">
+                    <input type="text" placeholder="Write your thought">
+                </a>
+
+                <a class="add" th:href="@{/create-post}">
+                    <span class="material-symbols-outlined">
+                    image
+                    </span>
+                </a>
+
+                <a class="add" th:href="@{/create-post}">
+                    <span class="material-symbols-outlined">
+                    link
+                    </span>
+                </a>
+            </div>
+
+            <div class="create-post1">
+
+                <a th:href="@{/new}">
+
+                    <span class="material-symbols-outlined">
+                        brightness_empty
+                        </span>
+                    New
+                </a>
+
+                <a th:href="@{/top}">
+                <span class="material-symbols-outlined">
+                vertical_align_top
+                </span>
+                    Top
+                </a>
+
+                <a th:href="@{/hot}">
+                    <span class="material-symbols-outlined">
+                        local_fire_department
+                        </span>
+                    Hot
+                </a>
+            </div>
+
+            <div class="card" th:each="post : ${posts}">
+                <h5 th:text="${post.subreddit.name}">Author Name</h5>
+                <h2><a th:href="@{${post.postId}}" th:text="${post.postName}">Title</a></h2>
+                <h5 th:text="${#temporals.format(post.createdAt, 'dd/MM/yyyy, hh:mm a')}"></h5>
+                <p th:text="${post.description}"></p>
+
+                <div th:if="${post.media != null}">
+                    <div th:if="${post.media.contentType.startsWith('image/')}">
+                        <img height="250px" width="100%" th:src="@{${'/display?id=' + post.media.mediaId}}" alt="Image">
+                    </div>
+
+                    <div th:if="${post.media.contentType.startsWith('video/')}">
+                        <video width="100%" controls>
+                            <source th:src="@{${'/display?id=' + post.media.mediaId}}"
+                                    th:type="${post.media.contentType}">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                </div>
+
+                <div class="vote">
+                    <form th:if="${voteType == null || voteType == 'DOWNVOTE'}"
+                          th:action="@{/posts/upvote/{postId}/UPVOTE(postId=${post.postId})}" method="Get">
+                        <button type="submit">
+                            <span class="material-symbols-outlined">arrow_upward</span>
+                        </button>
+                    </form>
+                    <span th:text="${post.voteCount}"></span>
+                    <form th:if="${voteType == null || voteType == 'UPVOTE'}"
+                          th:action="@{/posts/downvote/{postId}/DOWNVOTE(postId=${post.postId})}" method="Get">
+                        <button type="submit">
+                            <span class="material-symbols-outlined">arrow_downward</span>
+                        </button>
+                    </form>
+                    <form th:action="@{${post.postId}}" method="get">
+                        <button type="submit" class="comment-icon">
+                            <span class="material-symbols-outlined">
+                            comment
+                            </span>
+                            <span th:text="${post.comments.size()}"></span>
+                            Comments
+                        </button>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="create">
+            <a id="create" th:href="@{/create-post}">Create Post</a>
+            <a id="create-community" th:href="@{/create-community}">Create Community</a>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Post</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,1,0"/>
+    <link rel="stylesheet" th:href="@{/css/home.css}"/>
+    <link rel="stylesheet" href="../static/css/home.css">
+    <link rel="stylesheet" th:href="@{/css/create-post.css}"/>
+
+    <script>
+        function toggleReplyForm(commentId) {
+            var replyForm = document.getElementById("reply-comment-form-" + commentId);
+            if (replyForm.style.display === "none" || replyForm.style.display === "") {
+                replyForm.style.display = "block";
+            } else {
+                replyForm.style.display = "none";
+            }
+        }
+        function toggleEditForm(commentId) {
+            var replyForm = document.getElementById("reply-comment-form-edit-" + commentId);
+            if (replyForm.style.display === "none" || replyForm.style.display === "") {
+                replyForm.style.display = "block";
+            } else {
+                replyForm.style.display = "none";
+            }
+        }
+
+         function myFunction(language) {
+            console.log(language);
+            changeLanguage(language);
+        }
+
+        function changeLanguage(lang) {
+            const translations = {
+                en: {
+                    homeLink: 'Home',
+                    signUpLinkText: 'Sign Up',
+                    loginButtonText: 'Login',
+                    pageHeading: 'Welcome to the Website',
+                    introText: 'This is the introduction text.',
+                    submitButtonText: 'Submit',
+                    logoutText: 'Logout',
+                    newText: 'New',
+                    hotText: 'Hot',
+                    topText: 'Top',
+                    createPostText: 'Create Post',
+                    createCommunityText: 'Create Community',
+                    searchBlogText: 'Search for blog posts',
+                    writeThoughtText: 'Write your thought',
+
+                    submitCommentButton: 'Submit Comment',
+                    replyPlaceholder: 'Reply',
+                    editText: 'Edit',
+                    deleteText: 'Delete',
+
+                    postNameLabel: 'Post Name:',
+                    postNamePlaceholder: 'Title',
+                    urlLabel: 'URL:',
+                    descriptionLabel: 'Description:',
+                    subredditLabel: 'Select Subreddit:',
+                    selectOption: 'Select',
+                    draftButtonText: 'Draft',
+                    publishButtonText: 'Publish',
+                    updateButtonText: 'Update',
+                    updateDraftButtonText: 'Update Draft'
+                },
+                hi: {
+                    homeLink: 'होम',
+                    signUpLinkText: 'साइन अप करें',
+                    loginButtonText: 'लॉगिन',
+                    pageHeading: 'वेबसाइट में आपका स्वागत है',
+                    introText: 'यह परिचय टेक्स्ट है।',
+                    submitButtonText: 'प्रस्तुत करें',
+                    logoutText: 'लॉग आउट',
+                    newText: 'नया',
+                    hotText: 'हॉट',
+                    topText: 'शीर्ष',
+                    createPostText: 'पोस्ट बनाएं',
+                    createCommunityText: 'कम्युनिटी बनाएं',
+                    searchBlogText: 'ब्लॉग पोस्ट के लिए खोजें',
+                    writeThoughtText: 'अपनी विचारना लिखें',
+
+                    submitCommentButton: 'कमेंट सबमिट करें',
+                    replyPlaceholder: 'उत्तर दें',
+                    editText: 'सुधारे',
+                    deleteText: 'हटाएँ',
+
+                    postNameLabel: 'पोस्ट का नाम:',
+                    postNamePlaceholder: 'शीर्षक',
+                    urlLabel: 'यूआरएल:',
+                    descriptionLabel: 'विवरण:',
+                    subredditLabel: 'सबरेडिट चुनें:',
+                    selectOption: 'चयन करें',
+                    draftButtonText: 'ड्राफ़्ट',
+                    publishButtonText: 'प्रकाशित करें',
+                    updateButtonText: 'अपडेट करें',
+                    updateDraftButtonText: 'ड्राफ़्ट अपडेट करें'
+                },
+                te: {
+                    homeLink: 'హోమ్',
+                    signUpLinkText: 'నమోదు చేయండి',
+                    loginButtonText: 'లాగిన్',
+                    pageHeading: 'వెబ్సైట్‌కు స్వాగతం',
+                    introText: 'ఇది పరిచయ టెక్స్ట్ ఉంది.',
+                    submitButtonText: 'సమర్పించండి',
+                    logoutText: 'లాగ్ అవుట్',
+                    newText: 'కొత్తది',
+                    hotText: 'హాట్',
+                    topText: 'టాప్',
+                    createPostText: 'పోస్ట్ సృష్టించు',
+                    createCommunityText: 'కమ్యూనిటీ సృష్టించు',
+                    searchBlogText: 'బ్లాగు పోస్ట్‌లను వెతకండి',
+                    writeThoughtText: 'మీ ఆలోచనను రాయండి',
+
+                    submitCommentButton: 'వ్యాఖ్యను సమర్పించండి',
+                    replyPlaceholder: 'ప్రతిస్పందించండి',
+                    editText: 'సవరించు',
+                    deleteText: 'తొలగించు',
+
+                    postNameLabel: 'పోస్ట్ పేరు:',
+                    postNamePlaceholder: 'శీర్షిక',
+                    urlLabel: 'URL:',
+                    descriptionLabel: 'వివరణ:',
+                    subredditLabel: 'సబ్రెడిట్ ఎంచుకోండి:',
+                    selectOption: 'ఎంచుకోండి',
+                    draftButtonText: 'డ్రాఫ్ట్',
+                    publishButtonText: 'ప్రకటించు',
+                    updateButtonText: 'నవీకరణ',
+                    updateDraftButtonText: 'డ్రాఫ్ట్ నవీకరణ'
+                }
+            };
+
+            const translatedTexts = translations[lang];
+
+           document.getElementById('home-link').textContent = translatedTexts.homeLink;
+           if(document.getElementById('logout')!=null){
+                document.getElementById('logout').textContent = translatedTexts.logoutText;
+           }
+
+           document.getElementById('search-blog').placeholder = translatedTexts.searchBlogText;
+
+
+           document.getElementById('post-name-label').textContent = translatedTexts.postNameLabel;
+           document.getElementById('postName').placeholder = translatedTexts.postNamePlaceholder;
+            const urlLabel = document.querySelector('label[for="url"]');
+            const descriptionLabel = document.querySelector('label[for="description"]');
+            const descriptionTextarea = document.getElementById('description');
+
+            urlLabel.textContent = translatedTexts.urlLabel
+            descriptionLabel.textContent = translatedTexts.descriptionLabel;
+            description.placeholder = translatedTexts.descriptionLabel;
+            const subredditLabel = document.getElementById('subreddit-label');
+            const selectOption = document.getElementById('select-subreddit');
+
+            subredditLabel.textContent = translatedTexts.subredditLabel;
+            selectOption.textContent = translatedTexts.selectOption;
+
+            const draftButton = document.getElementById('draftButton');
+            const publishButton = document.getElementById('publishButton');
+            const updateButton = document.querySelector('input[value="Update"]');
+            const updateDraftButton = document.querySelector('input[value="Update Draft"]');
+
+            if (draftButton) {
+                draftButton.textContent = translatedTexts.draftButtonText;
+            }
+
+            if (publishButton) {
+                publishButton.textContent = translatedTexts.publishButtonText;
+            }
+
+            if (updateButton) {
+                updateButton.value = translatedTexts.updateButtonText;
+            }
+
+            if (updateDraftButton) {
+                updateDraftButton.value = translatedTexts.updateDraftButtonText;
+            }
+
+            localStorage.setItem('user_language', lang);
+        }
+
+    </script>
+</head>
+<body>
+<div class="nav">
+    <div class="nav-item1">
+        <div class="logo">
+            <img src="https://www.redditinc.com/assets/images/site/reddit-logo.png">
+            <strong>reddit</strong>
+        </div>
+
+        <div class="dropdown">
+            <a th:href="@{/posts}" class="dropbtn" id="home-link">Home</a>
+            <div class="dropdown-content">
+
+                <form th:action="@{/subreddit}" method="get" class="search-form">
+                    <span class="material-symbols-outlined">
+                search
+                </span>
+                    <input type="text" name="subredditName" placeholder="Search subreddit">
+                </form>
+
+                <div th:each="subreddit: ${subreddits}">
+                    <a th:if="${subreddit.name != null}" th:href="@{'/subreddit/r/'+ ${#strings.substring(subreddit.name, 2)}}"
+                       th:text="${subreddit.name}">
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+    <div class="nav-item2">
+        <form th:action="@{/search}" method="get" class="search-form">
+            <span class="material-symbols-outlined">search</span>
+            <input type="text" name="text" placeholder="Search for blog posts" id="search-blog" >
+        </form>
+    </div>
+
+    <div class="nav-item3">
+        <span class="material-symbols-outlined">
+            bubble
+        </span>
+        <span class="material-symbols-outlined">
+            chat_bubble
+        </span>
+
+        <a class="add" th:href="@{/create-post}">
+            <span class="material-symbols-outlined">
+            add
+            </span>
+        </a>
+        <div class="user-box" sec:authorize="isAuthenticated()">
+            <a class="add" th:href="@{/profile/posts}"><span th:if="${user != null}" th:text="${user.username}">bob</span></a>
+            &nbsp
+            <div th:if="${user != null && user.media != null}">
+                <div class="user-image" th:if="${user.media.contentType.startsWith('image/')}">
+                    <img  th:src="@{${'/display?id=' + user.media.mediaId}}" alt="Image">
+                </div>
+            </div>
+            <div th:unless="${user != null && user.media != null}" class="user-media">
+                <img src="https://www.redditinc.com/assets/images/site/reddit-logo.png">
+            </div>
+            <p>Karma:<span th:if="${user != null}" th:text="${user.karma}"></span></p>
+
+        </div>
+        <div sec:authorize="isAnonymous()" class="auth">
+            <a th:href="@{/register}">Register</a>
+            <a th:href="@{/login}" id="login-button">Login</a>
+        </div>
+        <div sec:authorize="isAuthenticated()" >
+            <form  th:action="@{/logout}" method="POST">
+<!--                <input id="logout" type="submit" value="Logout" class="logout-button">-->
+                <button id="logout">Logout</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="form-container">
+
+    <form th:action="@{/save-post}" method="post" th:object="${post}" enctype="multipart/form-data" class="form">
+
+        <div th:if="${post.postId == null}">
+            <label for="postName" id="post-name-label">Post Name:</label>
+            <input type="text" id="postName" name="postName" th:field="*{postName}" placeholder="Title" required><br>
+        </div>
+        <div th:if="${post.postId != null}">
+            <div th:text="${post.postName}"></div>
+        </div>
+
+
+        <label for="url">URL:</label>
+        <input type="text" id="url" name="url" th:field="*{url}"  th:readonly="${post.postId != null}" placeholder="https://www.reddit.com"><br>
+
+
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" th:field="*{description}" required placeholder="Description"></textarea><br>
+
+        <div th:if="${post.postId == null}">
+            <label for="subreddit" id ="subreddit-label">Select Subreddit:</label>
+            <select id="subreddit" name="subreddit.subredditId" th:field="*{subreddit.subredditId}" th:readonly="${post.postId != null}" required>
+                <option value="" id = "select-subreddit">Select</option>
+                <option th:each="subreddit : ${subreddits}" th:value="${subreddit.subredditId}" th:text="${subreddit.name}"></option>
+            </select><br>
+        </div>
+        <div th:if="${post.postId != null}">
+            <div th:if="${post.media != null}">
+                <div th:if="${post.media.contentType.startsWith('image/')}">
+                    <img height="25px" width="10%" th:src="@{${'/display?id=' + post.media.mediaId}}" alt="Image">
+                </div>
+
+                <div th:if="${post.media.contentType.startsWith('video/')}">
+                    <video width="100%" controls>
+                        <source th:src="@{${'/display?id=' + post.media.mediaId}}" th:type="${post.media.contentType}">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+
+            </div>
+        </div>
+<!--        <input type="file" name="file" aria-describedby="inputGroupFileAddon04" aria-label="Upload">-->
+
+        <input type="file" name="file" id="fileInput" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
+        <div id="fileDisplayArea"></div>
+
+
+        <!--        <input type="submit" name="action" value="Draft" th:if="${post.postId == null}">-->
+<!--        <input type="submit" name="action" value="Publish" th:if="${post.postId == null}">-->
+<!--        <button name="action" value="Draft" th:if="${post.postId == null}">Draft</button>-->
+<!--        <button name="action" value="Publish" th:if="${post.postId == null}">Publish</button>-->
+<!--        <div th:if="${post.postId != null}">-->
+<!--            <input type="hidden" name="postId"  th:value="${post.postId}">-->
+<!--            <input type="hidden" name="subreddit" th:value="${post.subreddit.subredditId}">-->
+<!--            <input type="hidden" name="createdAt" th:value="${post.createdAt}">-->
+<!--            <input type="submit" name="action" value="Update" th:if="${post.isPublished == true}">-->
+<!--            <input type="submit" name="action" value="Update Draft" th:if="${post.isPublished == false}">-->
+<!--        </div>-->
+        <button id="draftButton" name="action" value="Draft" th:if="${post.postId == null}">Draft</button>
+        <button id="publishButton" name="action" value="Publish" th:if="${post.postId == null}">Publish</button>
+        <div th:if="${post.postId != null}">
+            <input type="hidden" name="postId" th:value="${post.postId}">
+            <input type="hidden" name="subreddit" th:value="${post.subreddit.subredditId}">
+            <input type="hidden" name="createdAt" th:value="${post.createdAt}">
+            <input type="submit" name="action" value="Update" th:if="${post.isPublished == true}">
+            <input type="submit" name="action" value="Update Draft" th:if="${post.isPublished == false}">
+        </div>
+
+    </form>
+
+
+</div>
+
+<div th:if="${user != null}">
+    <!-- Render content if the user object is present -->
+    <script th:inline="javascript">
+        /* Check if the user object is present and then call myFunction */
+        var userLanguage = /*[[${user.language}]]*/ null; // Get the user's language
+        if (userLanguage !== null) {
+            myFunction(userLanguage);
+        }
+    </script>
+</div>
+<div th:if="${user == null}">
+    <!-- Render content if the user object is  not present -->
+    <script th:inline="javascript">
+        /* Check if the user object is present and then call myFunction */
+
+        const storedLang = localStorage.getItem('user_language');
+        if (storedLang !== null) {
+            myFunction(storedLang);
+        }
+    </script>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInput = document.getElementById('fileInput');
+        const fileDisplayArea = document.getElementById('fileDisplayArea');
+
+        fileInput.addEventListener('change', function() {
+            const file = fileInput.files[0]; // Get the selected file
+
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    if (file.type.startsWith('image')) {
+                        // Display images using an <img> tag
+                        fileDisplayArea.innerHTML = `<img src="${e.target.result}" alt="Uploaded Image">`;
+                    } else if (file.type.startsWith('video')) {
+                        // Display videos using a <video> tag
+                        fileDisplayArea.innerHTML = `<video controls><source src="${e.target.result}" type="${file.type}"></video>`;
+                    } else {
+                        // Display other file types as a download link
+                        fileDisplayArea.innerHTML = `<a href="${e.target.result}" download="${file.name}">Download ${file.name}</a>`;
+                    }
+                };
+
+                reader.readAsDataURL(file); // Read the file as a data URL
+            } else {
+                // If no file is selected, clear the display area
+                fileDisplayArea.innerHTML = '';
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

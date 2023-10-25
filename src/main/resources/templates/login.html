@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" th:href="@{/css/login.css}" />
+</head>
+<body>
+<div>
+
+    <form th:action="@{/authenticateUser}" method="Post">
+
+        <div class="container" id="container">
+            <h1 id="login-heading">Login</h1>
+            <select id="language-selector" onchange="changeLanguage(this.value)">
+                <option value="en">English</option>
+                <option value="hi">हिन्दी</option> <!-- Hindi -->
+                <option value="te">తెలుగు</option> <!-- Telugu -->
+                <!-- Add more language options as needed -->
+            </select>
+
+            <select id="mode-selector" onchange="changeMode(this.value)">
+                <option value="light">Light Mode</option>
+                <option value="dark">Dark Mode</option>
+            </select>
+
+
+            <div class="element">
+                <label for="username" id="email-label">Email:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="element">
+                <label for="password" id="password-label">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" id="login-button">Login</button>
+            <div th:if="${param.error}">
+                <span class="error-message">Invalid Credentials</span>
+            </div>
+            <div>
+                <span id="new-user">New User</span>
+                <a th:href="@{/register}" id="register-link">Register</a>
+
+            </div>
+            <a th:href="@{/posts}" class="dropbtn" id="home-link">Skip</a>
+        </div>
+    </form>
+</div>
+<script>
+    const translations = {
+        en: {
+            loginHeading: 'Login',
+            emailLabel: 'Email:',
+            passwordLabel: 'Password:',
+            loginButton: 'Login',
+            newUser: 'New User',
+            registerLink: 'Register',
+            // Add more translations as needed for English
+        },
+        hi: {
+            loginHeading: 'लॉगिन',
+            emailLabel: 'ईमेल:',
+            passwordLabel: 'पासवर्ड:',
+            loginButton: 'लॉगिन करें',
+            newUser: 'नया उपयोगकर्ता',
+            registerLink: 'रजिस्टर करें',
+            // Add more translations as needed for Hindi
+        },
+        te: {
+            loginHeading: 'లాగిన్',
+            emailLabel: 'ఇమెయిల్:',
+            passwordLabel: 'పాస్వర్డ్:',
+            loginButton: 'లాగిన్',
+            newUser: 'కొత్త వినియోగదారు',
+            registerLink: 'నమోదు చేయండి',
+            // Add more translations as needed for Telugu
+        },
+        // Add translations for other languages
+    };
+
+    function changeLanguage(lang) {
+        const translatedTexts = translations[lang];
+
+        // Update text for each element based on the selected language
+        document.getElementById('login-heading').textContent = translatedTexts.loginHeading;
+        document.getElementById('email-label').textContent = translatedTexts.emailLabel;
+        document.getElementById('password-label').textContent = translatedTexts.passwordLabel;
+        document.getElementById('login-button').textContent = translatedTexts.loginButton;
+        document.getElementById('new-user').textContent = translatedTexts.newUser;
+        document.getElementById('register-link').textContent = translatedTexts.registerLink;
+
+        // Add similar code for other elements as needed
+        localStorage.setItem('user_language', lang);
+
+    }
+
+    function initializeLanguageSelector() {
+    const storedLang = localStorage.getItem('user_language');
+    const languageSelector = document.getElementById('language-selector');
+
+    if (storedLang) {
+        languageSelector.value = storedLang;
+        changeLanguage(storedLang); // Update the page content with the stored language
+    }
+
+    languageSelector.addEventListener('change', function () {
+        const selectedLang = languageSelector.value;
+        changeLanguage(selectedLang);
+    });
+    }
+
+// Call the function to initialize the language selector
+    initializeLanguageSelector();
+
+
+    function changeMode(currentMode){
+        const body = document.body;
+        console.log(currentMode)
+        let container = document.getElementById('container');
+        if (currentMode != 'dark') {
+            body.classList.remove('dark-mode');
+            body.classList.add('light-mode');
+            localStorage.setItem('user_mode', 'light');
+            container.style.backgroundColor='white'; // Fixed the typo here
+        } else {
+            body.classList.remove('light-mode');
+            body.classList.add('dark-mode');
+            localStorage.setItem('user_mode', 'dark');
+             container.style.backgroundColor='black'; // Fixed the typo here
+        }
+    }
+    function initializeModeSelector() {
+    const storedMode = localStorage.getItem('user_mode');
+    const modeSelector = document.getElementById('mode-selector');
+
+    if (storedMode) {
+        modeSelector.value = storedMode;
+        console.log(storedMode)
+        changeMode(storedMode);
+    }
+
+    modeSelector.addEventListener('change', function () {
+        const modeSelectorr = modeSelector.value;
+        changeMode(modeSelectorr);
+    });
+    }
+
+    initializeModeSelector();
+</script>
+</body>
+</html>

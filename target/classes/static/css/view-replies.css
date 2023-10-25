@@ -1,0 +1,111 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+.commentList{
+width:40%;
+background-color:rgb(238,238,238);
+padding:20px;
+border-radius:5px;
+}
+.container{
+display:flex;
+justify-content:center;
+margin-top:40px;
+}
+
+.commentList strong {
+    color: #333;
+    font-weight: bold;
+}
+
+.commentList span {
+    color: #777;
+}
+
+.commentList div {
+    margin-bottom: 10px;
+}
+
+.commentList ol {
+    list-style-type: none;
+    padding: 0;
+
+}
+
+.commentList li {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.commentList button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.commentList .vote span {
+    margin: 0 5px;
+    font-weight: bold;
+}
+
+.commentList li span a {
+    text-decoration: none;
+    color: #007bff;
+    margin-right: 10px;
+}
+
+.commentList a[th:href*="/viewReplies/"] {
+    color: #007bff;
+    text-decoration: underline;
+}
+
+.commentList a[th:href*="/replyOnComment/"] {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.commentList .vote {
+  display: flex;
+  gap: 20px;
+}
+
+.commentList .vote button {
+  border: none;
+  background-color: inherit;
+  cursor:pointer;
+}
+.commentList .parent-comment{
+
+}
+
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 10;
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: auto;
+    padding: 20px;
+    width: 40%;
+    text-align: center;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius:10px
+}

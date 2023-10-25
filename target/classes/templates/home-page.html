@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,1,0"/>
+    <link rel="stylesheet" th:href="@{/css/home.css}"/>
+    <link rel="stylesheet" href="../static/css/home.css">
+    <title>Posts</title>
+    <script>
+        function myFunction(language) {
+            console.log(language);
+            changeLanguage(language);
+        }
+
+        function changeLanguage(lang) {
+            const translations = {
+                en: {
+                    homeLink: 'Home',
+                    signUpLinkText: 'Sign Up',
+                    loginButtonText: 'Login',
+                    pageHeading: 'Welcome to the Website',
+                    introText: 'This is the introduction text.',
+                    submitButtonText: 'Submit',
+                    logoutText: 'Logout',
+                    newText: 'New',
+                    hotText: 'Hot',
+                    topText: 'Top',
+                    createPostText: 'Create Post',
+                    createCommunityText: 'Create Community',
+                    searchBlogText: 'Search for blog posts',
+                    writeThoughtText: 'Write your thought'
+                },
+                hi: {
+                    homeLink: 'होम',
+                    signUpLinkText: 'साइन अप करें',
+                    loginButtonText: 'लॉगिन',
+                    pageHeading: 'वेबसाइट में आपका स्वागत है',
+                    introText: 'यह परिचय टेक्स्ट है।',
+                    submitButtonText: 'प्रस्तुत करें',
+                    logoutText: 'लॉग आउट',
+                    newText: 'नया',
+                    hotText: 'हॉट',
+                    topText: 'शीर्ष',
+                    createPostText: 'पोस्ट बनाएं',
+                    createCommunityText: 'कम्युनिटी बनाएं',
+                    searchBlogText: 'ब्लॉग पोस्ट के लिए खोजें',
+                    writeThoughtText: 'अपनी विचारना लिखें'
+                },
+                te: {
+                    homeLink: 'హోమ్',
+                    signUpLinkText: 'నమోదు చేయండి',
+                    loginButtonText: 'లాగిన్',
+                    pageHeading: 'వెబ్సైట్‌కు స్వాగతం',
+                    introText: 'ఇది పరిచయ టెక్స్ట్ ఉంది.',
+                    submitButtonText: 'సమర్పించండి',
+                    logoutText: 'లాగ్ అవుట్',
+                    newText: 'కొత్తది',
+                    hotText: 'హాట్',
+                    topText: 'టాప్',
+                    createPostText: 'పోస్ట్ సృష్టించు',
+                    createCommunityText: 'కమ్యూనిటీ సృష్టించు',
+                    searchBlogText: 'బ్లాగు పోస్ట్‌లను వెతకండి',
+                    writeThoughtText: 'మీ ఆలోచనను రాయండి'
+                }
+            };
+
+            const translatedTexts = translations[lang];
+
+            document.getElementById('home-link').textContent = translatedTexts.homeLink;
+           if(document.getElementById('logout')!=null){
+                document.getElementById('logout').textContent = translatedTexts.logoutText;
+           }
+            document.getElementById('new').textContent = translatedTexts.newText;
+            document.getElementById('hot').textContent = translatedTexts.hotText;
+            document.getElementById('top').textContent = translatedTexts.topText;
+            document.getElementById('create').textContent = translatedTexts.createPostText;
+            document.getElementById('create-community').textContent = translatedTexts.createCommunityText;
+            document.getElementById('search-blog').placeholder = translatedTexts.searchBlogText;
+            document.getElementById('write-thought').placeholder = translatedTexts.writeThoughtText;
+
+            if( document.getElementById('signUp')!=null ){
+                document.getElementById('signUp').textContent = translatedTexts.signUpLinkText;
+                document.getElementById('login-button').textContent = translatedTexts.loginButtonText;
+            }
+
+            localStorage.setItem('user_language', lang);
+        }
+
+    </script>
+</head>
+<body>
+<!--<div  th:if="${user != null}">-->
+<!--    &lt;!&ndash; Render content if the user object is present &ndash;&gt;-->
+<!--    <p>name</p>-->
+<!--    <p ></p>-->
+<!--</div>-->
+
+
+<div class="nav">
+    <div class="nav-item1">
+        <div class="logo">
+            <img src="https://www.redditinc.com/assets/images/site/reddit-logo.png">
+            <strong>reddit</strong>
+        </div>
+
+        <div class="dropdown" >
+            <div style="align-items:center;
+                        text-align:center;
+                        display:flex;
+                        border:1px solid #BDC3C7 ;
+                        padding:3px 2px; width:190px;
+                        justify-content:space-between;
+                        cursor:pointer;">
+                <a  th:href="@{/posts}" class="dropbtn" id="home-link">Home </a>
+                <span class="material-symbols-outlined">stat_minus_1</span>
+            </div>
+            <div class="dropdown-content">
+
+                <form th:action="@{/subreddit}" method="get" class="search-form">
+                    <span class="material-symbols-outlined">search</span>
+                    <input type="text" name="subredditName" placeholder="Search subreddit">
+                </form>
+
+                <a id="create-community-box" th:href="@{/create-community}"><span class="material-symbols-outlined">add</span> <p>Create Community</p></a>
+
+                <div class="select-box" th:each="subreddit: ${subredditList}">
+
+                    <div class="option">
+                        <img th:if="${ subreddit != null && subreddit.media != null}"   th:src="@{${'/display?id=' + subreddit.media.mediaId}}" alt="Image">
+                        <a th:if="${subreddit.name != null}" th:href="@{'/subreddit/r/'+ ${#strings.substring(subreddit.name, 2)}}"
+                           th:text="${subreddit.name}">
+                        </a>
+                        <span class="material-symbols-outlined">star</span>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+    <div class="nav-item2">
+        <form th:action="@{/search}" method="get" class="search-form">
+            <span class="material-symbols-outlined">search</span>
+            <input type="text" name="text" id="search-blog" placeholder="Search for blog posts">
+        </form>
+    </div>
+
+    <div class="nav-item3">
+        <div sec:authorize="isAuthenticated()" class="notification">
+            <a class="add add1" th:href="@{/notification}">
+                        <span class="material-symbols-outlined">
+                        notifications
+                        </span>
+                <span th:if="${@utility.notifications() >0}">
+                <span style="position: absolute; color: white; font-size: 12px; width: 13px; height: 13px; background-color: red; border-radius: 50%; padding: 1px; top:10px" th:text="${@utility.notifications()}"></span>
+                </span>
+            </a>
+        </div>
+        <span class="material-symbols-outlined">
+            chat_bubble
+        </span>
+<!--        <a th:href="@{/notification}" class="add1">-->
+<!--                        <span class="material-symbols-outlined">-->
+<!--                        notifications-->
+<!--                        </span>-->
+<!--            <span th:text="${@utility.notifications()}"></span>-->
+<!--        </a>-->
+
+        <a class="add add1" th:href="@{/create-post}">
+            <span class="material-symbols-outlined">
+            add
+            </span>
+        </a>
+        <div class="user-box" sec:authorize="isAuthenticated()">
+            <a class="add add1" th:href="@{/profile/posts}"><span th:if="${user != null}" th:text="${user.username}"></span></a>
+            &nbsp;
+            <div th:if="${user != null && user.media != null}">
+                <div class="user-image" th:if="${user.media.contentType.startsWith('image/')}">
+                    <img  th:src="@{${'/display?id=' + user.media.mediaId}}" alt="Image">
+                </div>
+            </div>
+            <div th:unless="${user != null && user.media != null}" class="user-media">
+                <img src="https://www.redditinc.com/assets/images/site/reddit-logo.png">
+            </div>
+            <p>Karma:<span th:if="${user != null}" th:text="${user.karma}"></span></p>
+
+        </div>
+        <div sec:authorize="isAnonymous()" class="auth">
+            <a th:href="@{/register}" id="signUp">Sign Up</a>
+            <a th:href="@{/login}" id="login-button">Login</a>
+        </div>
+        <div sec:authorize="isAuthenticated()" >
+            <form  th:action="@{/logout}" method="POST">
+                <button id="logout">Logout</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="content-container">
+    <div class="content">
+        <div class="blog-container">
+
+            <div class="create-post card1">
+
+                <div sec:authorize="isAnonymous()">
+                    <img height="50px" width="50px" src="https://www.redditinc.com/assets/images/site/reddit-logo.png">
+                </div>
+
+                <div sec:authorize="isAuthenticated()">
+                    <div th:if="${user != null && user.media != null}">
+                        <div th:if="${user.media.contentType.startsWith('image/')}">
+                            <img height="50px" width="50px" th:src="@{${'/display?id=' + user.media.mediaId}}" alt="Image">
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <a id="create-new-post-tab" class="add" th:href="@{/create-post}">
+                    <input type="text" id="write-thought" placeholder="Write your thought">
+                </a>
+
+                <a class="add add1" th:href="@{/create-post}">
+                    <span class="material-symbols-outlined">
+                    image
+                    </span>
+                </a>
+
+                <a class="add add1" th:href="@{/create-post}">
+                    <span class="material-symbols-outlined">
+                    link
+                    </span>
+                </a>
+            </div>
+
+            <div class="create-post1 card1">
+
+                <a th:href="@{/new}">
+
+                    <span class="material-symbols-outlined">
+                        brightness_empty
+                        </span>
+                    <span id="new">New</span>
+                </a>
+
+                <a th:href="@{/top}">
+                <span class="material-symbols-outlined">
+                vertical_align_top
+                </span>
+                    <span id="top">Top</span>
+                </a>
+
+                <a th:href="@{/hot}">
+                    <span class="material-symbols-outlined">
+                        local_fire_department
+                    </span>
+                    <span id="hot">Hot</span>
+                </a>
+            </div>
+
+            <div class="card card1" th:each="post, postIndex : ${posts}" >
+                <h5 th:text="${post.subreddit.name}">Author Name</h5>
+                <h2><a th:href="@{${post.postId}}" th:text="${post.postName}">Title</a></h2>
+                <div th:text="${post.user.username}"></div>
+                <h5 th:datetime="${post.publishedAt}" th:utext="${#temporals.format(post.publishedAt, 'dd/MM/yyyy, hh:mm a')}"></h5>
+                <p th:text="${post.description}"></p>
+                <a th:if="${#strings.startsWith(post.url, 'http://') or #strings.startsWith(post.url, 'https://')}" th:href="${post.url}" target="_blank">
+                    <span th:text="${post.url}"></span>
+                </a>
+
+
+                <div th:if="${post.media != null}">
+                    <div th:if="${post.media.contentType.startsWith('image/')}">
+                        <img height="250px" width="100%" th:src="@{${'/display?id=' + post.media.mediaId}}" alt="Image">
+                    </div>
+
+                    <div th:if="${post.media.contentType.startsWith('video/')}">
+                        <video width="100%" controls>
+                            <source th:src="@{${'/display?id=' + post.media.mediaId}}"
+                                    th:type="${post.media.contentType}">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                </div>
+
+                <div class="vote">
+                    <form th:action="@{/posts/upvote/{postId}/UPVOTE(postId=${post.postId})}" method="Get">
+                        <button type="submit">
+                            <span class="material-symbols-outlined add1">arrow_upward</span>
+                        </button>
+                    </form>
+
+                    <span th:text="${post.voteCount}"  class="vote-count" th:data-comment-index="${postIndex}"></span>
+                    <form  style="display:none;" class="modal" th:id="'modal-comment-' + ${postIndex}">
+                        <div class="modal-content">
+                            <div th:each="vote : ${post.votes}">
+                                <span th:text="${vote.user.username}" class="username" style="color:red"></span>
+                                <span th:if="${#strings.equals(vote.voteType, 'DOWNVOTE')}" class="downvote-message" style="color:red;">Downvoted this Post</span>
+                                <span th:if="${#strings.equals(vote.voteType, 'UPVOTE')}" class="upvote-message" style="color:green;">Upvoted this Post</span>
+                            </div>
+                            <button type="button" style="padding: 10px; border-radius: 10px;border:1px solid black;" class="close-button">Close</button>
+                        </div>
+                    </form>
+
+                    <form th:action="@{/posts/downvote/{postId}/DOWNVOTE(postId=${post.postId})}" method="Get">
+                        <button type="submit">
+                            <span class="material-symbols-outlined add1">arrow_downward</span>
+                        </button>
+                    </form>
+                    <form th:action="@{${post.postId}}" method="get">
+                        <button type="submit" class="comment-icon add1">
+                            <span class="material-symbols-outlined">
+                            comment
+                            </span>
+                            <span th:text="${post.comments.size()}"></span>
+                        </button>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="create card1">
+            <a  th:href="@{/create-post}"><span id="create">Create Post</span></a>
+            <a  th:href="@{/create-community}"><span id="create-community">Create Community</span></a>
+        </div>
+    </div>
+
+</div>
+<div th:if="${user != null}">
+    <!-- Render content if the user object is present -->
+    <script th:inline="javascript">
+        /* Check if the user object is present and then call myFunction */
+        var userLanguage = /*[[${user.language}]]*/ null; // Get the user's language
+        if (userLanguage !== null) {
+            myFunction(userLanguage);
+        }
+    </script>
+</div>
+<div th:if="${user == null}">
+    <!-- Render content if the user object is present -->
+    <script th:inline="javascript">
+        /* Check if the user object is present and then call myFunction */
+
+        const storedLang = localStorage.getItem('user_language');
+        if (storedLang !== null) {
+            myFunction(storedLang);
+        }
+    </script>
+</div>
+<script>
+    function changeMode(currentMode){
+       const body = document.body;
+       console.log(currentMode)
+       let searchBlog = document.getElementById('search-blog');
+       const nav = document.querySelector('.nav');
+       if (currentMode != 'dark') {
+           body.classList.remove('dark-mode');
+           body.classList.add('light-mode');
+
+            const cards = document.getElementsByClassName('card1');
+             for (let i = 0; i < cards.length; i++) {
+              const element = cards[i];
+              element.classList.add('card');
+              element.classList.remove('card-dark');
+            }
+
+           localStorage.setItem('user_mode', 'light');
+
+       } else {
+           body.classList.remove('light-mode');
+           body.classList.add('dark-mode');
+
+            nav.style.backgroundColor='#333';
+            const elements = document.getElementsByClassName('add1');
+            for (let i = 0; i < elements.length; i++) {
+              const element = elements[i];
+              element.style.color = 'white';
+            }
+
+             const cards = document.getElementsByClassName('card1');
+             for (let i = 0; i < cards.length; i++) {
+              const element = cards[i];
+              element.classList.remove('card');
+              element.classList.add('card-dark');
+            }
+<!--            searchBlog.style.backgroundColor='#333'-->
+           localStorage.setItem('user_mode', 'dark');
+
+       }
+   }
+   function initializeModeSelector() {
+   const storedMode = localStorage.getItem('user_mode');
+
+
+       if (storedMode) {
+           console.log(storedMode)
+           changeMode(storedMode);
+       }
+
+
+   }
+
+   initializeModeSelector();
+</script>
+
+<script>
+    document.querySelectorAll('.vote-count').forEach(function(voteCount) {
+      voteCount.addEventListener('click', function() {
+          const commentIndex = voteCount.getAttribute('data-comment-index');
+          const modalId = 'modal-comment-' + commentIndex;
+          const modal = document.getElementById(modalId);
+
+          if (modal) {
+              if (modal.style.display === 'none' || modal.style.display === '') {
+                  modal.style.display = 'block';
+              } else {
+                  modal.style.display = 'none';
+              }
+          }
+      });
+  });
+
+  // Add an event listener for the "Close" button
+  document.querySelectorAll('.close-button').forEach(function(closeButton) {
+      closeButton.addEventListener('click', function() {
+          const modal = closeButton.closest('.modal');
+          if (modal) {
+              modal.style.display = 'none';
+          }
+      });
+  });
+</script>
+</body>
+</html>

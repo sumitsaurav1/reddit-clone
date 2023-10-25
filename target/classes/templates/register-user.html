@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Resister</title>
+  <link rel="stylesheet" th:href="@{/css/register.css}" />
+
+
+</head>
+<body>
+<div>
+  <form method="post" th:action="@{/registerUser}" th:object="${user}">
+    <div class="container">
+      <h2 style="text-align:center">Resister</h2>
+
+      <select id="language-selector" onchange="changeLanguage(this.value)">
+        <option value="en">English</option>
+        <option value="hi">हिन्दी</option> <!-- Hindi -->
+        <option value="te">తెలుగు</option> <!-- Telugu -->
+        <!-- Add more language options as needed -->
+      </select>
+
+      <div class="element">
+        <label for="username"><strong><span id="username-label">Username:</span></strong></label>
+        <input type="text" id="username" name="username" th:value="${user.username}" required>
+      </div>
+
+      <div class="element">
+        <label for="email"><strong><span id="email-label">Email:</span></strong></label>
+        <input type="email" id="email" name="email" th:value="${user.email}" required>
+      </div>
+
+      <div class="element">
+        <label for="password"><strong><span id="password-label">Password:</span></strong></label>
+        <input type="password" id="password" name="password" th:value="${user.password}" required>
+      </div>
+
+      <div class="element">
+        <label for="conPassword"><strong><span id="conPassword-label">Confirm Password:</span></strong></label>
+        <input type="password" id="conPassword"  required>
+      </div>
+      <button type="submit"><span id="register-button">Register</span></button>
+      <div>
+        <span><span id="existing-user-text">Existing User</span></span>
+        <a th:href="@{/login}"><span id="login-link-text">Login</span></a>
+      </div>
+      <div th:if="${error}">
+        <span th:text="${error}">error message</span>
+      </div>
+    </div>
+  </form>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const passwordField = document.getElementById("password");
+    const confirmPasswordField = document.getElementById("conPassword");
+
+    const form = document.querySelector("form");
+    form.addEventListener("submit", function (event) {
+      if (passwordField.value !== confirmPasswordField.value) {
+        alert("Passwords do not match!");
+        event.preventDefault();
+      }
+      if(passwordField.value.length<8){
+        alert("Passwords length should be greater than or equal to eight !");
+        event.preventDefault();
+      }
+    });
+  });
+
+  const translations = {
+  en: {
+      // English translations for form elements
+      usernameLabel: 'Username:',
+      emailLabel: 'Email:',
+      passwordLabel: 'Password:',
+      confirmPasswordLabel: 'Confirm Password:',
+      registerButton: 'Register',
+      existingUserText: 'Existing User',
+      loginLinkText: 'Login'
+      // Add more translations as needed for English
+  },
+  hi: {
+      // Hindi translations for form elements
+      usernameLabel: 'उपयोगकर्ता नाम:',
+      emailLabel: 'ईमेल:',
+      passwordLabel: 'पासवर्ड:',
+      confirmPasswordLabel: 'पासवर्ड की पुष्टि करें:',
+      registerButton: 'रजिस्टर',
+      existingUserText: 'मौजूदा उपयोगकर्ता',
+      loginLinkText: 'लॉगिन'
+      // Add more translations as needed for Hindi
+  },
+  te: {
+      // Telugu translations for form elements
+      usernameLabel: 'వాడుకరి పేరు:',
+      emailLabel: 'ఇమెయిల్:',
+      passwordLabel: 'పాస్వర్డ్:',
+      confirmPasswordLabel: 'పాస్వర్డ్ నిర్ధారించండి:',
+      registerButton: 'నమోదు',
+      existingUserText: 'ఇప్పటి ఉపయోగకర్త',
+      loginLinkText: 'లాగిన్'
+      // Add more translations as needed for Telugu
+  },
+  // Add translations for other languages
+};
+
+function changeLanguage(lang) {
+  const translatedTexts = translations[lang];
+
+  // Update the text content of form elements
+  document.getElementById('username-label').textContent = translatedTexts.usernameLabel;
+  document.getElementById('email-label').textContent = translatedTexts.emailLabel;
+  document.getElementById('password-label').textContent = translatedTexts.passwordLabel;
+  document.getElementById('conPassword-label').textContent = translatedTexts.confirmPasswordLabel;
+  document.getElementById('register-button').textContent = translatedTexts.registerButton;
+  document.getElementById('existing-user-text').textContent = translatedTexts.existingUserText;
+  document.getElementById('login-link-text').textContent = translatedTexts.loginLinkText;
+
+  localStorage.setItem('user_language', lang);
+}
+
+function initializeLanguageSelector() {
+  const storedLang = localStorage.getItem('user_language');
+  const languageSelector = document.getElementById('language-selector');
+
+  if (storedLang) {
+      languageSelector.value = storedLang;
+      changeLanguage(storedLang); // Update the page content with the stored language
+  }
+
+  languageSelector.addEventListener('change', function () {
+      const selectedLang = languageSelector.value;
+      changeLanguage(selectedLang);
+  });
+}
+
+// Call the function to initialize the language selector
+initializeLanguageSelector();
+
+</script>
+
+</body>
+</html>
+
+
